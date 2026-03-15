@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ category.name }} | MyShop{% endblock %}
+
+{% block content %}
+
+<style>
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.filter-box {
+    background: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+</style>
+
+<!-- ================= CATEGORY BANNER ================= -->
+
+
+<div class="row">
+
+    <!-- ================= FILTER SIDEBAR ================= -->
+    <div class="col-md-3 d-none d-md-block">
+        <div class="filter-box mb-4">
+            <h6 class="fw-bold">Categories</h6>
+            <ul class="list-unstyled">
+                {% for cat in categories %}
+                <li class="mb-2">
+                    <a href="{% url 'shop:category_products' cat.slug %}"
+                       class="{% if cat == category %}fw-bold text-primary{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+       <div class="filter-box">
+    <h6 class="fw-bold mb-3">Price</h6>
+
+    <!-- ===== SLIDER ===== -->
+    <div class="range-container">
+        <div class="slider-track"></div>
+
+        <input type="range" min="100" max="500000" step="500"
+               id="minRange"
+               value="{{ request.GET.min_price|default:1000 }}">
+
+        <input type="range" min="100" max="500000" step="500"
+               id="maxRange"
+               value="{{ request.GET.max_price|default:500000 }}">
+    </div>
+
+    <!-- ===== PRICE LABELS ===== -->
+    <div class="d-flex justify-content-between small fw-semibold mb-3">
+        <span>₹<span id="minPrice">100</span></span>
+        <span>₹<span id="maxPrice">500000</span></span>
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <form method="get" id="priceForm">
+        <input type="hidden" name="min_price" id="minInput">
+        <input type="hidden" name="max_price" id="maxInput">
+
+        <button class="btn btn-sm btn-primary w-100">Apply</button>
+        <a href="?" class="btn btn-sm btn-outline-secondary w-100 mt-2">
+            Clear
+        </a>
+    </form>
+</div>
+
+<!-- ===== CSS ===== -->
+<style>
+
+
+.page-wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+
+.pagination-box{
+    margin-top:auto;
+}
+
+.product-section{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+
+.range-container {
+    position: relative;
+    height: 36px;
+    margin-bottom: 10px;
+}
+
+.range-container input[type=range] {
+    position: absolute;
+    width: 100%;
+    pointer-events: none;
+    -webkit-appearance: none;
+    background: none;
+    top: 14px;
+}
+
+.range-container input[type=range]::-webkit-slider-thumb {
+    pointer-events: all;
+    width: 16px;
+    height: 16px;
+    background: #2874f0;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+.slider-track {
+    position: absolute;
+    height: 4px;
+    width: 100%;
+    background: #ddd;
+    top: 20px;
+    border-radius: 4px;
+}
+</style>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+const minRange = document.getElementById("minRange");
+const maxRange = document.getElementById("maxRange");
+const minPrice = document.getElementById("minPrice");
+const maxPrice = document.getElementById("maxPrice");
+const minInput = document.getElementById("minInput");
+const maxInput = document.getElementById("maxInput");
+const track = document.querySelector(".slider-track");
+
+const MIN = 100;
+const MAX = 500000;
+const GAP = 500;
+
+function updateSlider() {
+    let minVal = parseInt(minRange.value);
+    let maxVal = parseInt(maxRange.value);
+
+    if (maxVal - minVal < GAP) {
+        if (event.target === minRange) {
+            minRange.value = maxVal - GAP;
+        } else {
+            maxRange.value = minVal + GAP;
+        }
+    }
+
+    minPrice.textContent = Number(minRange.value).toLocaleString();
+    maxPrice.textContent = Number(maxRange.value).toLocaleString();
+
+    minInput.value = minRange.value;
+    maxInput.value = maxRange.value;
+
+    let percentMin = ((minRange.value - MIN) / (MAX - MIN)) * 100;
+    let percentMax = ((maxRange.value - MIN) / (MAX - MIN)) * 100;
+
+    track.style.background =
+        `linear-gradient(to right,
+        #ddd ${percentMin}%,
+        #2874f0 ${percentMin}%,
+        #2874f0 ${percentMax}%,
+        #ddd ${percentMax}%)`;
+}
+
+minRange.addEventListener("input", updateSlider);
+maxRange.addEventListener("input", updateSlider);
+updateSlider();
+</script>
+
+    </div>
+
+    <!-- ================= PRODUCTS ================= -->
+    <div class="col-md-9 product-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">
+                <span class="text-muted small">
+                    Best Deals
+                </span>
+            </h5>
+        </div>
+
+        <div class="row">
+
+            {% for product in recommended_products %}
+            <div class="col-6 col-md-4 col-lg-3 mb-4">
+                <div  class="card product-card h-100">
+
+                    {% if product.images.first %}
+                                            <a href="{% url 'shop:product_detail' product.id %}" >
+                                                 <img src="{{ product.images.first.image.url }}"
+                          href="{% url 'shop:product_detail' product.id %}"
+                         class="card-img-top p-3"
+                         style="height:180px; object-fit:contain;">
+                                            </a>
+
+
+                    {% endif %}
+
+                    <div class="card-body text-center p-2" >
+
+                               <h6 class="small mb-1" >
+                            {{ product.name|truncatechars:35 }}
+                        </h6>
+
+
+
+
+                        {% if product.discount_price %}
+                            <span class="fw-bold text-success">
+                                ₹{{ product.discount_price }}
+                            </span>
+                            <del class="text-muted small">
+                                ₹{{ product.price }}
+                            </del>
+                        {% else %}
+                            <span class="fw-bold">
+                                ₹{{ product.price }}
+                            </span>
+                        {% endif %}
+
+                        {% if product.stock > 0 %}
+                        <div class="mt-2">
+                            <a href="{% url 'cart:add_to_cart' product.id %}"
+                               class="btn btn-sm btn-primary">
+                                Add to Cart
+                            </a>
+                        </div>
+                        {% else %}
+                        <span class="badge bg-danger mt-2">
+                            Out of Stock
+                        </span>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p>No products found in this category.</p>
+            {% endfor %}
+
+        </div>
+
+        <!-- PAGINATION FIXED BOTTOM -->
+<div class="pagination-box">
+{% if recommended_products.has_other_pages %}
+<nav class="mt-3">
+<ul class="pagination justify-content-center">
+
+{% if recommended_products.has_previous %}
+
+<li class="page-item">
+<a class="page-link" href="?page={{ recommended_products.previous_page_number }}">Previous</a>
+</li>
+{% endif %}
+
+{% for num in recommended_products.paginator.page_range %}
+<li class="page-item {% if recommended_products.number == num %}active{% endif %}">
+<a class="page-link" href="?page={{ num }}">{{ num }}</a>
+</li>
+{% endfor %}
+
+{% if recommended_products.has_next %}
+<li class="page-item">
+<a class="page-link" href="?page={{ recommended_products.next_page_number }}">Next</a>
+</li>
+{% endif %}
+
+</ul>
+</nav>
+{% endif %}
+</div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

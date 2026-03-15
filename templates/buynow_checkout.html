@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="row">
+
+<!-- LEFT SIDE -->
+<div class="col-md-8">
+
+<!-- CART SUMMARY -->
+<div class="card shadow-sm mb-4">
+<div class="card-body">
+
+<h4 class="mb-3">🛒 Order Items</h4>
+
+<table class="table align-middle">
+<thead class="table-light">
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Subtotal</th>
+</tr>
+</thead>
+
+<tbody>
+{% for item in cart_items %}
+<tr>
+<td class="fw-semibold">{{ item.name }}</td>
+<td>{{ item.quantity }}</td>
+<td>₹{{ item.discount_price|default:item.price }}</td>
+<td class="fw-bold text-success">₹{{ item.subtotal }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div>
+</div>
+
+
+<!-- ADDRESS SECTION -->
+<div class="card shadow-sm">
+<div class="card-body">
+
+<h4 class="mb-3">📍 Select Shipping Address</h4>
+
+<form method="post">
+{% csrf_token %}
+
+<div class="row">
+
+{% for radio in form.saved_address %}
+<div class="col-md-6 mb-3">
+<label class="address-card border rounded p-3 w-100">
+{{ radio.tag }}
+<div class="ms-2">
+{{ radio.choice_label }}
+</div>
+</label>
+</div>
+{% endfor %}
+
+<!-- ADD NEW ADDRESS OPTION -->
+<div class="col-md-6 mb-3">
+<label class="address-card border rounded p-3 w-100">
+<input type="radio" name="saved_address" value="" id="newAddressRadio">
+<div class="fw-bold text-primary">
+➕ Add New Address
+</div>
+</label>
+</div>
+
+</div>
+
+
+<!-- NEW ADDRESS FORM -->
+<div id="new-address-fields" class="border rounded p-3 mt-3">
+
+<h5 class="mb-3">New Address</h5>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+{{ form.full_name.label_tag }}
+{{ form.full_name }}
+</div>
+
+<div class="col-md-6 mb-3">
+{{ form.phone.label_tag }}
+{{ form.phone }}
+</div>
+
+<div class="col-md-12 mb-3">
+{{ form.address_line_1.label_tag }}
+{{ form.address_line_1 }}
+</div>
+
+<div class="col-md-12 mb-3">
+{{ form.address_line_2.label_tag }}
+{{ form.address_line_2 }}
+</div>
+
+<div class="col-md-4 mb-3">
+{{ form.city.label_tag }}
+{{ form.city }}
+</div>
+
+<div class="col-md-4 mb-3">
+{{ form.state.label_tag }}
+{{ form.state }}
+</div>
+
+<div class="col-md-4 mb-3">
+{{ form.postal_code.label_tag }}
+{{ form.postal_code }}
+</div>
+
+<div class="col-md-12 mb-3">
+{{ form.country.label_tag }}
+{{ form.country }}
+</div>
+
+</div>
+
+</div>
+
+<button class="btn btn-success btn-lg mt-3 w-100">
+✅ Place Order
+</button>
+
+</form>
+
+</div>
+</div>
+
+</div>
+
+
+<!-- RIGHT SIDE SUMMARY -->
+<div class="col-md-4">
+
+<div class="card shadow-sm position-sticky" style="top:100px;">
+<div class="card-body">
+
+<h4 class="mb-3">💰 Order Summary</h4>
+
+<div class="d-flex justify-content-between mb-2">
+<span>Items Total</span>
+<span>₹{{ total }}</span>
+</div>
+
+<div class="d-flex justify-content-between mb-2">
+<span>Delivery</span>
+<span class="text-success">FREE</span>
+</div>
+
+<hr>
+
+<div class="d-flex justify-content-between fw-bold fs-5">
+<span>Total</span>
+<span class="text-success">₹{{ total }}</span>
+</div>
+
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<style>
+.address-card{
+cursor:pointer;
+transition:.3s;
+background:#fff;
+}
+
+.address-card:hover{
+border-color:#0d6efd;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.address-card input{
+margin-right:8px;
+}
+
+.address-card:has(input:checked){
+border:2px solid #0d6efd;
+background:#f4f8ff;
+}
+</style>
+
+
+<script>
+function toggleAddress(){
+let selected = document.querySelector('input[name="saved_address"]:checked')
+
+if(selected && selected.value !== ""){
+document.getElementById("new-address-fields").style.display="none"
+}else{
+document.getElementById("new-address-fields").style.display="block"
+}
+}
+
+document.querySelectorAll('input[name="saved_address"]').forEach(el=>{
+el.addEventListener("change",toggleAddress)
+})
+
+window.onload = toggleAddress
+</script>
+
+{% endblock %}

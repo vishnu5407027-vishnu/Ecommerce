@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f1f3f6;
+        }
+        .container {
+            width: 70%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 6px;
+        }
+        .payment-option {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .payment-option:hover {
+            background: #f9f9f9;
+        }
+        .pay-btn {
+            background: #fb641b;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .total-box {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Select Payment Method</h2>
+
+    <div class="total-box">
+        <h3>Total Amount: ₹{{ total }}</h3>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="payment-option">
+            <input type="radio" name="payment_method" value="card" required>
+            <strong>Credit / Debit Card</strong><br>
+            <small>Visa, MasterCard, RuPay</small>
+        </div>
+
+        <div class="payment-option">
+            <input type="radio" name="payment_method" value="upi">
+            <strong>UPI</strong><br>
+            <small>Google Pay, PhonePe, Paytm</small>
+        </div>
+
+        <div class="payment-option">
+            <input type="radio" name="payment_method" value="netbanking">
+            <strong>Net Banking</strong>
+        </div>
+
+        <div class="payment-option">
+            <input type="radio" name="payment_method" value="wallet">
+            <strong>Wallet</strong>
+        </div>
+
+        <div class="payment-option">
+            <input type="radio" name="payment_method" value="emi">
+            <strong>EMI</strong>
+        </div>
+
+        <div class="payment-option" style="border:2px solid #fb641b;">
+            <input type="radio" name="payment_method" value="cod">
+            <strong>Cash on Delivery</strong><br>
+            <small>Pay when you receive</small>
+        </div>
+
+        <br>
+        <button type="submit" class="pay-btn">
+            Confirm & Place Order
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>
