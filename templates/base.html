@@ -1,3 +1,5 @@
+{% load static %}
+
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
@@ -111,7 +113,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="/">MyShop</a>
+      <a class="navbar-brand" href="/">
+      <img src="{% static 'images/logo-new.png' %}" alt="Bootstrap" width="59" height="48">
+    </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
@@ -172,7 +176,7 @@
     <div class="footer-container">
 
         <div>
-            <h3>MyShop</h3>
+            <h3>Elvora</h3>
             <p>
                 Your one-stop destination for quality products at the best prices.
                 Shop smart. Shop easy.
